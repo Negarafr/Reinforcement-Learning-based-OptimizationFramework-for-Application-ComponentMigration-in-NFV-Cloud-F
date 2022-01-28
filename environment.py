@@ -119,7 +119,6 @@ class Environment(object):
                 self.topology_json["entity"][i]["node_loc"] = Location_Fog[:][FogNum]   # Location_Fog[simulationtime][nodeN][0]
                 FogNum += 1
 
-        print(self.topology_json["entity"])
     def get_link(self,num_nodes):
         ed = 0
         for e1 in range(num_nodes - 1):
@@ -145,7 +144,7 @@ class Environment(object):
                     self.topology_json["link"][ed]['BW'] = 10
                     self.topology_json["link"][ed]['PR'] = 3
                     ed += 1
-        print(self.topology_json["link"])
+
     def _getVnfdProperties(self, num_vnfds):
         for i in range(num_vnfds):
             self.vnfd_properties[i]["VNFID"] = i
@@ -158,7 +157,6 @@ class Environment(object):
         for e1 in range(num_IoT):
             for e2 in range(num_nodes):
                 if self.topology_json["entity"][e2]["model"] == 'Fog':
-                    # print("IoT-Fog", 'edgeside1', e1, 'edgeside2', e2)
                     self.IoTLink_properties[edIoT]['LinkID'] = edIoT
                     self.IoTLink_properties[edIoT]['edgeside1'] = e1
                     self.IoTLink_properties[edIoT]['edgeside2'] = e2
@@ -233,16 +231,12 @@ class Environment(object):
         for c in range(len(self.topology_json["entity"])):
             for iot in range(self.num_IoT):
                 if self.dv_array[c, vnf] == 1:
-                    #print('^^^^^^^^^^^VNF:^^^^^^^^^^^^^^',vnf)
+                   
                     # Transmission Delay IoT
                     if self.vnfd_properties[vnf]['IoTconnection'][iot] == True:
-                        #print("***There is connection with IoT***",iot)
                         if self.topology_json["entity"][c]["model"] == 'Fog':
-
                             dis = distance(time, iot, self.topology_json["entity"][c]["node_loc"][time])
                         elif self.topology_json["entity"][c]["model"] == 'Cloud':
-
-                            #print('Location_IoT[time][iot]',Location_IoT[time][iot])
                             dis = distance(time, iot, self.topology_json["entity"][c]["node_loc"])
                         self.propagDelayIoT = dis / speed_propag
                         propag[iot]=dis / speed_propag
@@ -260,42 +254,31 @@ class Environment(object):
         for c in range(len(self.topology_json["entity"])):
             if self.dv_array[c, vnf] == 1:
                 if self.vnfd_properties[vnf]['ipvnf'] == []:
-                    #print("***FirtransDelayIpvnfst VNF & No IPVNF")
                     self.transDelayIpvnf=0
                     #transDelayIpvnf[i1]=0
                     self.transmissionDelay = max(self.transDelayIoT, self.transDelayIpvnf)
-                    # print("TransmissionDelayMax:", self.transmissionDelay)
                 else: #Ipvnf exist
-                    #print('vnf',vnf)
                     #Propagation Delay Ipvnf
                     for i1 in range(len(self.vnfd_properties[vnf]['ipvnf'])):
                         tem=self.getNodeVNF()
                         ipvnf=int(tem[self.vnfd_properties[vnf]['ipvnf'][i1]])
-                        #print('c',c,'ipvnf',ipvnf)
                         if c==ipvnf: #vnf anf IpVnF are in the same node
                             propagDelayIpvnf[i1]=0
                             self.transDelayIpvnf=0
-                            #print('propagDelayIpvnf[i1]', propagDelayIpvnf[i1])
                         else:#vnf anf IpVnF are not in the same node
                                 if(self.topology_json["entity"][c]["model"]=='Fog' and self.topology_json["entity"][ipvnf]["model"]=='Cloud'):
-                                        #print('Fog_Cloud'),print(self.node_properties[c]["node_loc"][time],'*',self.node_properties[ipvnf]["node_loc"])
+ 
                                         disip=distanceIpvnF(self.topology_json["entity"][c]["node_loc"][time],self.topology_json["entity"][ipvnf]["node_loc"])
                                 elif(self.topology_json["entity"][c]["model"]=='Cloud' and self.topology_json["entity"][ipvnf]["model"]=='Fog'):
-                                        #print('Cloud_fog'),print(self.node_properties[c]["node_loc"],self.node_properties[ipvnf]["node_loc"][time])
                                         disip=distanceIpvnF(self.topology_json["entity"][c]["node_loc"],self.topology_json["entity"][ipvnf]["node_loc"][time])
                                 elif(self.topology_json["entity"][c]["model"]=='Cloud' and self.topology_json["entity"][ipvnf]["model"]=='Cloud'):
-                                        #print('Cloud-cloud'),print(self.node_properties[c]["node_loc"],self.node_properties[ipvnf]["node_loc"])
-                                        disip=distanceIpvnF(self.topology_json["entity"][c]["node_loc"],self.topology_json["entity"][ipvnf]["node_loc"])
+                                         disip=distanceIpvnF(self.topology_json["entity"][c]["node_loc"],self.topology_json["entity"][ipvnf]["node_loc"])
                                 else:
-                                    #print('Fog-Fog'),print(self.node_properties[c]["node_loc"][time],self.node_properties[ipvnf]["node_loc"][time])
                                     disip=distanceIpvnF(self.topology_json["entity"][c]["node_loc"][time],self.topology_json["entity"][ipvnf]["node_loc"][time])
-                                    #print(disip)
-                                #print(disip)
-                                propagDelayIpvnf[i1]=disip/speed_propag
 
-                                #print('propagDelayIpvnf[i1]',propagDelayIpvnf)
+                                propagDelayIpvnf[i1]=disip/speed_propag
                     propagIp = max(propagDelayIpvnf)
-                    #print('propagIp', propagIp)
+
 
                     #communication Delay IpVNf
                     for i in range(len(self.topology_json["link"])):
@@ -309,12 +292,11 @@ class Environment(object):
                                     transDelayIpvnf[i1]=(self.vnfd_properties[vnf]['trafficIpvn'] / self.topology_json["link"][i]['BW']) * self.dv_array[c, vnf]
 
                     transIpVnf=max(transDelayIpvnf)
-                    #print('transDelayIpvnf',transDelayIpvnf)
-                    #print('transIpVnf',transIpVnf)
+
 
                     self.transDelayIpvnf=transIpVnf+propagIp
                     self.transmissionDelay=max(self.transDelayIoT,self.transDelayIpvnf)
-                    #print("TransmissionDelayMax:",self.transmissionDelay)
+
         return self.transmissionDelay
     def getPropagIpvnf(self, vnf, time):
         propagDelayIpvnf = [None] * len(self.vnfd_properties[vnf]['ipvnf'])
@@ -451,19 +433,19 @@ class Environment(object):
             '''Migration Delay'''
             if self.getMigrationDelay(v,time)==0:
                 w3D = w3D+0
-                #print('Delayprocess Weight',self.getDelayprocess(v), 'weightTransDelay',(self.getTransmisionDelay(v, time) - XminDT) / (XmaxDT - XminDT), 'weightMigrationDelay',0)
+                #'Delayprocess Weight',self.getDelayprocess(v), 'weightTransDelay',(self.getTransmisionDelay(v, time) - XminDT) / (XmaxDT - XminDT), 'weightMigrationDelay',0)
             else:
                 w3D = w3D + abs(((self.getMigrationDelay(v, time) - XminDM) / (XmaxDM - XminDM)))
-                #print('Delayprocess Weight', self.getDelayprocess(v), 'weightTransDelay',(self.getTransmisionDelay(v, time) - XminDT) / (XmaxDT - XminDT), 'weightMigrationDelay',(self.getMigrationDelay(v, time) - XminDM) / (XmaxDM - XminDM))
+                #'Delayprocess Weight', self.getDelayprocess(v), 'weightTransDelay',(self.getTransmisionDelay(v, time) - XminDT) / (XmaxDT - XminDT), 'weightMigrationDelay',(self.getMigrationDelay(v, time) - XminDM) / (XmaxDM - XminDM))
 
             '''Migration Cost'''
             if self.getMigrationCost(v)==0:
 
                 w4C = w4C+0
-                #print('Weight MigrationCost', 0, 'weight CostPower', self.getPowerConsumptionCost(v))
+                #'Weight MigrationCost', 0, 'weight CostPower', self.getPowerConsumptionCost(v)
             else:
 
-               # print('Weight MigrationCost', abs(((self.getMigrationCost(v)-xminCM)/(xmaxCM-xminCM))), 'weight CostPower',self.getPowerConsumptionCost(v))
+               # 'Weight MigrationCost', abs(((self.getMigrationCost(v)-xminCM)/(xmaxCM-xminCM))), 'weight CostPower',self.getPowerConsumptionCost(v))
 
                 w4C=w4C+abs(((self.getMigrationCost(v)-xminCM)/(xmaxCM-xminCM)))
 
@@ -476,11 +458,6 @@ class Environment(object):
         '''*____Root Cal*____'''
         WDtotal = w1D + w2D + w3D
         WCtotal = w4C + w5C
-        print(' Migration Cost w4c',w4C)
-        print('Migration Delay w5C',w5C)
-
-        #self.DelayRequest=DelayProcessRoot+DelayTransRoot +DelayMigrationRoot
-        #self.CostRequest = CostMigrationRoot + CostPowerRoot
         self.DelayRequest=WDtotal/(self.chain_length)
         self.CostRequest=WCtotal/(self.chain_length)
         self.objec=(self.alfaobject*self.DelayRequest)+((1-self.alfaobject)*self.CostRequest)
