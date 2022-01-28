@@ -167,8 +167,6 @@ class Environment(object):
                     edIoT += 1
 
                 elif self.topology_json["entity"][e2]["model"] == 'Cloud':
-
-                    # print("IoT-Cloud", 'edgeside1', e1, 'edgeside2', e2)
                     self.IoTLink_properties[edIoT]['LinkID'] = edIoT
                     self.IoTLink_properties[edIoT]['edgeside1'] = e1
                     self.IoTLink_properties[edIoT]['edgeside2'] = e2
