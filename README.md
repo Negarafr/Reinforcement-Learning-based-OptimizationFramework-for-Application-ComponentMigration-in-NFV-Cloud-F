@@ -8,4 +8,5 @@ Tensorflow 1.14.0
 Python 3.6
 # Author
 Negar Afrasiabi, PhD student at the Concordia University
+
 Contact me: afrasiabi.negar@gmail.com
