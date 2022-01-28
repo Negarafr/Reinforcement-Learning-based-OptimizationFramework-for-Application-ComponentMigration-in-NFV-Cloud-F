@@ -10,13 +10,13 @@ P = lambda ALPHA, MIN, MAX, SAMPLES: ((MAX ** (ALPHA+1.) - 1.) * rand(*SAMPLES.s
 # define an Exponential Distribution
 E = lambda SCALE, SAMPLES: -SCALE*np.log(rand(*SAMPLES.shape))
 #### Initalization ##########
-simulation_time = 2000#1000
-number_of_nodes = 12 #5
-v_min = 0  # mph. Minimum velocity
-v_max = 60  # mph. Maximum velocity
-region_x = 100  # in meter
-region_y = 100  # in meter
-nr_nodes=number_of_nodes
+simulation_time =
+number_of_nodes = 
+v_min =  # mph. Minimum velocity
+v_max =   # mph. Maximum velocity
+region_x =   # in meter
+region_y =   # in meter
+nr_nodes=    #number of nodes
 
 # The x-coordinates of all the users.. initialize with zero for all the time instance
 nodes_position_x = [[0 for _ in range(simulation_time)]
